@@ -1,0 +1,4 @@
+
+Thermia modbus content extracted from protocol PDF as CSV and converted into library interface with CLI stub for testing.
+Intended to interact with Thermia Heatpump (e.g. Calibra Eco) as a component within an application using string based names.
+Note some other implementations on GitHub appear to be out of sync with the protocol PDF.
