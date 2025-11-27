@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo "Installing thermia-publish..."
+for cmd in avahi-publish-address ip ping logger; do
+    if ! command -v "$cmd" &>/dev/null; then
+        echo "ERROR: Required command '$cmd' not found"
+        case "$cmd" in
+            avahi-publish-address)
+                echo "  Install with: apt install avahi-utils"
+                ;;
+            ip)
+                echo "  Install with: apt install iproute2"
+                ;;
+        esac
+        exit 1
+    fi
+done
+
+# Install script
+install -m 755 "$SCRIPT_DIR/thermia-publish.sh" /usr/local/bin/
+
+# Install config if not exists
+if [[ ! -f /etc/defaults/thermia-publish ]]; then
+    install -m 644 "$SCRIPT_DIR/thermia-publish.default" /etc/default/thermia-publish
+    echo "Installed config to /etc/default/thermia-publish"
+    echo "IMPORTANT: Edit to set MAC_ADDRESS"
+else
+    echo "Config /etc/default/thermia-publish already exists, not overwriting"
+fi
+
+# Install systemd service
+install -m 644 "$SCRIPT_DIR/thermia-publish.service" /etc/systemd/system/
+
+# Reload systemd
+systemctl daemon-reload
+
+

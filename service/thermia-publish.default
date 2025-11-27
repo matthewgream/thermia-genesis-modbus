@@ -1,0 +1,19 @@
+
+# MAC address of the Thermia heatpump (required)
+# Format: aa:bb:cc:dd:ee:ff or AA-BB-CC-DD-EE-FF
+MAC_ADDRESS="cc:33:31:2b:10:e1"
+
+# Hostname to publish via Avahi/mDNS
+HOSTNAME="thermia.local"
+
+# Network interface to scan (leave empty for auto-detect)
+INTERFACE=""
+
+# How often to scan for the device when not found (seconds)
+SCAN_INTERVAL=30
+
+# How often to verify the device is still at the same IP (seconds)
+PROBE_INTERVAL=300
+
+# Syslog facility
+LOG_FACILITY="local0"
