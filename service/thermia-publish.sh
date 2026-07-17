@@ -39,11 +39,11 @@ log() {
     local level="$1"
     shift
     logger -t thermia-publish -p "${LOG_FACILITY}.${level}" "$*"
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [$level] $*"
+    # echo "$(date '+%Y-%m-%d %H:%M:%S') [$level] $*"
 }
 
 cleanup() {
-    log info "Shutting down..."
+    log info "shutting down..."
     if [[ -n "$AVAHI_PID" ]] && kill -0 "$AVAHI_PID" 2>/dev/null; then
         kill "$AVAHI_PID" 2>/dev/null || true
         wait "$AVAHI_PID" 2>/dev/null || true
@@ -141,23 +141,23 @@ start_avahi_publish() {
     avahi-publish-address -R -a "$hostname" "$ip" &
     AVAHI_PID=$!
 
-    log info "Publishing $hostname -> $ip (pid $AVAHI_PID)"
+    log info "publishing $hostname -> $ip (pid $AVAHI_PID)"
 }
 
 stop_avahi_publish() {
     if [[ -n "$AVAHI_PID" ]] && kill -0 "$AVAHI_PID" 2>/dev/null; then
         kill "$AVAHI_PID" 2>/dev/null || true
         wait "$AVAHI_PID" 2>/dev/null || true
-        log info "Stopped publishing $HOSTNAME"
+        log info "stopped publishing $HOSTNAME"
     fi
     AVAHI_PID=""
     CURRENT_IP=""
 }
 
 main() {
-    log info "Starting thermia-publish"
-    log info "Looking for MAC=$MAC_ADDRESS, publishing as $HOSTNAME"
-    log info "Scan interval=${SCAN_INTERVAL}s, probe interval=${PROBE_INTERVAL}s"
+    log info "starting thermia-publish"
+    log info "looking for MAC=$MAC_ADDRESS, publishing as $HOSTNAME"
+    log info "scan interval=${SCAN_INTERVAL}s, probe interval=${PROBE_INTERVAL}s"
 
     local last_scan=0
     local last_probe=0
@@ -171,9 +171,9 @@ main() {
             if (( now - last_probe >= PROBE_INTERVAL )); then
                 last_probe=$now
                 if verify_ip "$CURRENT_IP" "$MAC_ADDRESS"; then
-                    log debug "Verified $HOSTNAME -> $CURRENT_IP"
+                    log debug "verified $HOSTNAME -> $CURRENT_IP"
                 else
-                    log warning "Lost contact with $CURRENT_IP, rescanning..."
+                    log warning "lost contact with $CURRENT_IP, rescanning..."
                     stop_avahi_publish
                 fi
             fi
@@ -182,18 +182,18 @@ main() {
         # If no current IP or time for a scan, look for the device
         if [[ -z "$CURRENT_IP" ]] && (( now - last_scan >= SCAN_INTERVAL )); then
             last_scan=$now
-            log debug "Scanning for MAC $MAC_ADDRESS..."
+            log debug "scanning for MAC $MAC_ADDRESS..."
 
             local new_ip
             if new_ip=$(find_ip_for_mac "$MAC_ADDRESS"); then
                 if [[ "$new_ip" != "$CURRENT_IP" ]]; then
-                    log info "Found device at $new_ip"
+                    log info "found device at $new_ip"
                     CURRENT_IP="$new_ip"
                     start_avahi_publish "$CURRENT_IP" "$HOSTNAME"
                     last_probe=$now
                 fi
             else
-                log debug "Device not found"
+                log debug "device not found"
             fi
         fi
 
