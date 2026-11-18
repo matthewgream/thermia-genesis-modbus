@@ -1,0 +1,33 @@
+# thermia-caleon: the Thermia's comfort wheel from the Caleon - see the head of thermia-caleon.c
+#   wheel = WHEEL_BASE + (the highest room set point - SETPOINT_BASE) + (the flow request - FLOW_BASE) / FLOW_PER_STEP (at most SHIFT_MAX)
+# The values here are the defaults; uncomment to change. Then: systemctl restart thermia-caleon
+
+# the Thermia (modbus TCP) and the broker caleon2mqtt publishes to
+#THERMIA_ADDRESS=192.168.0.106
+#THERMIA_MODEL=mega
+#BROKER=localhost
+#BROKER_PORT=1883
+#TOPIC=caleon
+#STATE_TOPIC=thermia/caleon
+
+# the wheel: 22 is the heat curve as the installer left it (for a house at 21); +1 = +3°C on the supply set point
+#WHEEL_BASE=22
+#SETPOINT_BASE=21
+# the Caleon's flow request: 30, plus 3 per degree the coldest room is under its set point
+#FLOW_BASE=30
+#FLOW_PER_STEP=3
+# the most the flow request adds to the wheel (2: +6°C on the supply)
+#SHIFT_MAX=2
+# the Thermia's lowest (its panel goes to 10), and a ceiling
+#WHEEL_MIN=10
+#WHEEL_MAX=30
+
+# seconds: between looks; between changes from the flow request (set point changes go at once); a flow request older than this is
+# ignored; between status lines (and looks at the Thermia when nothing changes)
+#INTERVAL=60
+#HOLD=900
+#STALE=600
+#STATUS=900
+
+# set to anything: look and log, never write
+#DRY_RUN=1

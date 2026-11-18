@@ -1,0 +1,17 @@
+[Unit]
+Description=thermia-caleon: the Thermia's comfort wheel from the Caleon's room set points and flow request
+After=network-online.target mosquitto.service caleon2mqtt.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=-/etc/default/thermia-caleon
+ExecStart=/usr/local/bin/thermia-caleon
+# a stop puts the wheel back to WHEEL_BASE (22) first
+TimeoutStopSec=30
+Restart=always
+RestartSec=30
+SyslogIdentifier=thermia-caleon
+
+[Install]
+WantedBy=multi-user.target

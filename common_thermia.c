@@ -33,6 +33,7 @@ typedef struct {
 
 static modbus_t *g_ctx = NULL;
 static model_t g_model = MODEL_MEGA;
+static bool g_quiet = false;
 
 static const register_def_t g_registers[] = {
 #include "common_thermia_registers.h"
@@ -71,7 +72,8 @@ bool thermia_modbus_open(const char *address, int port, model_t model) {
         g_ctx = NULL;
         return false;
     }
-    printf("modbus: connected to %s:502 (model: %s)\n", address, model == MODEL_MEGA ? "MEGA" : "INVERTER");
+    if (!g_quiet)
+        printf("modbus: connected to %s:502 (model: %s)\n", address, model == MODEL_MEGA ? "MEGA" : "INVERTER");
     return true;
 }
 
@@ -169,6 +171,30 @@ bool thermia_modbus_write_register_int(const char *name, int value) {
     }
 
     return true;
+}
+
+// ------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------
+
+// the register table, for tools that list or describe registers (e.g. thermia-status's alarms); supported is by the model opened
+
+void thermia_modbus_quiet(bool quiet) { g_quiet = quiet; }
+
+int thermia_register_count(void) { return g_num_registers; }
+const char *thermia_register_name(int index) { return index >= 0 && index < g_num_registers ? g_registers[index].name : NULL; }
+
+static const register_def_t *find_register_any(const char *name) { return find_register(name, REG_COIL_STATUS | REG_INPUT_STATUS | REG_INPUT | REG_HOLDING); }
+bool thermia_register_supported(const char *name) {
+    const register_def_t *reg = find_register_any(name);
+    return reg != NULL && is_register_supported(reg);
+}
+int thermia_register_scale(const char *name) {
+    const register_def_t *reg = find_register_any(name);
+    return reg != NULL ? reg->scale : 0;
+}
+const char *thermia_register_description(const char *name) {
+    const register_def_t *reg = find_register_any(name);
+    return reg != NULL ? reg->description : NULL;
 }
 
 // ------------------------------------------------------------------------------------------------------------------------
